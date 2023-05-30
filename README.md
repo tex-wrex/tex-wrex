@@ -45,7 +45,7 @@
 <h5>
 Hyperlink list of additional project resources:
 <li><a href='https://cris.dot.state.tx.us/public/Query/app/home'>CRIS Query</a></li>
-<li><a href='CANVA LINK HERE'>Canva Presentation</a></li>
+<li><a href='CANVA LINK HERE'>Canva Presentation (UNFINISHED)</a></li>
 </h5>
 <br><br><br>
 
@@ -63,7 +63,7 @@ Hyperlink list of additional project resources:
 <a href='#tableofcontents'>Back to 'Table of Contents'</a>
 <br><br>
 <h5>
-Using crash, unit, and personnel data for motorcycle incidents from years 2018 - 2022 from the <a href='https://cris.dot.state.tx.us/public/Query/app/home'>CRIS Query</a>, identify patterns and create a classification model to predict the level of injury of the motorcycle driver.
+Using crash conditions, vehicle, driver, and road data of single motorcycle crash incidents (Crashes where only a single motorcycle was involved) from years 2018 - 2022 in the <a href='https://cris.dot.state.tx.us/public/Query/app/home'>CRIS Query</a>, identify patterns and create a classification model to predict the level of injury severity of the motorcycle driver.
 </h5>
 <br><br><br>
 
@@ -88,6 +88,7 @@ Using crash, unit, and personnel data for motorcycle incidents from years 2018 -
 <li>Create the best classification model that can accurately predict the level of injury of the motorcycle driver</li>
 <li>Ensure files and references are available and adequate for other's information gain</li>
 <li>Create and deliver a professional presentation via Canva</li>
+<li>Create a model that conducts a risk assessment of motorcycle drivers to better determine the insurance premium for the motorcyclist</li>
 </h5>
 <br><br><br>
 
@@ -108,16 +109,29 @@ Using crash, unit, and personnel data for motorcycle incidents from years 2018 -
 Hypothesis:
 </b></h4>
 <h5>
-There are many factors at play in relation to a motorcyclist's level of injury in a crash, but the road's curvature, the local population, and condition of the motorcycle would most likely impact the outcome the most.
+A combination of crash conditions, vehicle, personnel, and road data will dictate the motorcyclist's level of injury in a crash, but the road's curvature, the local population, and condition of the motorcycle would most likely impact the outcome the most.
 </h5>
 <br>
 <h4><b>
 Questions:
 </b></h4>
 <h5>
-<li>Does the curvature of the road affect the outcome of the rider's (Motorcyclist) level of injury?</li>
-<li>Does the data's 'population_group_id' have a specific id value that leads to higher levels of injury with the motorcyclist?</li>
-<li>Does whether or not the road have guard-rails affect the level of injury for the motorcyclist?</li>
+<li>Does the time of day matter in relation to injury severity?</li>
+<li>Does the weather at the time of the crash relate to injury severity?</li>
+<li>Does the surface condition of the roadways relate to injury severity?</li>
+<li>Does the total count of inanimate objects struck by the motorcyclist relate to injury severity?</li>
+<li>Does the failure to control speed relate to injury severity?</li>
+<li>Does speeding relate to injury severity?</li>
+<li>Does the motorcycle brand relate to injury severity?</li>
+<li>Does the maintainence condition of the motorcycle relate to injury severity?</li>
+<li>Which motorcycle crashes the most? Type? Brand?</li>
+<li>Which age is most likely to have fatal motorcycle crashes?</li>
+<li>Which age is most likely to be in a motorcycle crash?</li>
+<li>Does the income salary of the motorcyclist relate to injury severity?</li>
+<li>Does the curvature of the road affect the injury severity?</li>
+<li>Does whether or not there is merging traffic relate to injury severity?</li>
+<li>Do intersections relate to injury severity?</li>
+<li>Does the length of motorcycle trips relate to injury severity?</li>
 </h5>
 <br><br><br>
 
@@ -167,7 +181,7 @@ Questions:
 <li>Deliver takeaways</li>
 <br>
 <h4><b>Deliverables</b></h4>
-<li>Canva Presentation <a href='PUT LINK HERE'>CLICK HERE</a></li>
+<li>Canva Presentation <a href='PUT LINK HERE'>CLICK HERE (UNFINISHED)</a></li>
 <li>Full and complete group repository with pertinent work.</li>
 <br><br><br>
 
