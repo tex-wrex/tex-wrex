@@ -379,7 +379,7 @@ def get_single_motorcycle_crashes(df):
     original_df = df
     original_df = original_df.reset_index()
     count_of_people_involved_in_crash = original_df['Crash ID'].value_counts()
-    crashes_with_only_one_person = count_of_people_involved_in_crash[count_of_people_involved_in_crash == 1].index()
+    crashes_with_only_one_person = count_of_people_involved_in_crash[count_of_people_involved_in_crash == 1].index
     crashes_with_only_one_person = crashes_with_only_one_person.to_list()
     new_df = original_df[original_df['Crash ID'].isin(crashes_with_only_one_person)]
     return new_df
