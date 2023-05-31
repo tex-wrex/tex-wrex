@@ -6,6 +6,7 @@ from glob import glob
 
 
 def get_csv_files(keyword='_all_person'):
+    
     return [file for file in glob('*.csv') if keyword in file]
 
 
@@ -48,5 +49,6 @@ def process_csv_files(csv_files):
     df_svc = df_svc.applymap(lambda x: x.lower().strip() if isinstance(x, str) else x)
     # Replace 'no data' with an empty string
     df_svc.replace('no data', '', inplace=True)
+    df_svc.to_csv('master_crashes_svc.csv', index=False)
 
     return df_svc
