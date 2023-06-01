@@ -17,6 +17,7 @@
 12. drop_nullpct
 13. check_nulls
 14. get_single_motorcycle_crashes
+15. drop_nullpct_alternate
 '''
 
 # =======================================================================================================
@@ -38,6 +39,7 @@ science pipeline or also known as 'wrangling' the data...
 
 import numpy as np
 import pandas as pd
+import re
 from sklearn.model_selection import train_test_split
 import os
 
@@ -49,15 +51,17 @@ import os
 
 def acquire():
     '''
-    Obtains the vanilla version of the mass_shooters dataframe
+    Reads the 'master_list.csv' file acquired from all crashes with motorcycles in Texas from
+    2018 - 2022 via CRIS QUERY (https://cris.dot.state.tx.us/public/Query/app/query-builder) data pull
 
     INPUT:
     NONE
 
     OUTPUT:
-    mass_shooters = pandas dataframe
+    master = pandas dataframe of master dataframe
     '''
-    print('Acquire dat shit!')
+    master = pd.read_csv('master_list.csv', index_col=0)
+    return master
 
 # =======================================================================================================
 # acquire END
@@ -74,13 +78,19 @@ def prepare():
     NONE
 
     OUTPUT:
-    .csv = ONLY IF FILE NONEXISTANT
-    prepped_mass_shooters = pandas dataframe of the prepared mass_shooters dataframe
+    svcs = pandas dataframe of the prepared Texas crashes with only single motorcycle crashes
     '''
-    if os.path.exists('mass_shooters.csv'):
-        print('Prep dat shit!')
+    if os.path.exists('svcs.csv'):
+        svcs = pd.read_csv('svcs.csv', index_col=0)
+        return svcs
     else:
-        print('Prep dat shit!')
+        master = acquire()
+        master.reset_index(inplace=True)
+        master.columns = master.columns.str.replace(' ', '_').str.lower()
+        master.fillna('No Data', inplace=True)
+        master = master.replace(to_replace=re.compile(r'.*no\s*data.*', re.IGNORECASE), value='no data', regex=True)
+        svcs = get_single_motorcycle_crashes(master)
+        return svcs
 
 # =======================================================================================================
 # prepare END
@@ -90,27 +100,22 @@ def prepare():
 
 def wrangle():
     '''
-    Function that acquires, prepares, and splits the mass_shooters dataframe for use as well as 
-    creating a csv.
+    Function that acquires and prepares the Texas crash dataframe for use as well as creating a csv.
 
     INPUT:
     NONE
 
     OUTPUT:
     .csv = ONLY IF FILE NONEXISTANT
-    train = pandas dataframe of training set for mass_shooter data
-    validate = pandas dataframe of validation set for mass_shooter data
-    test = pandas dataframe of testing set for mass_shooter data
+    svcs = pandas dataframe of the prepared Texas crashes with only single motorcycle crashes
     '''
-    if os.path.exists('mass_shooters.csv'):
-        mass_shooters = pd.read_csv('mass_shooters.csv', index_col=0)
-        train, validate, test = split(mass_shooters, stratify='shooter_volatility')
-        return train, validate, test
+    if os.path.exists('svcs.csv'):
+        svcs = pd.read_csv('svcs.csv', index_col=0)
+        return svcs
     else:
-        mass_shooters = prepare()
-        mass_shooters.to_csv('mass_shooters.csv')
-        train, validate, test = split(mass_shooters, stratify='shooter_volatility')
-        return train, validate, test
+        svcs = prepare()
+        svcs.to_csv('svcs.csv')
+        return svcs
     
 # =======================================================================================================
 # wrangle END
@@ -329,7 +334,7 @@ def drop_nullpct(df, percent_cutoff):
     }
     for col in df:
         pct = df[col].isna().sum() / df.shape[0]
-        if pct > 0.20:
+        if pct > percent_cutoff:
             df = df.drop(columns=col)
             drop_null_pct_dict['column_name'].append(col)
             drop_null_pct_dict['percent_null'].append(pct)
@@ -368,7 +373,7 @@ def check_nulls(df):
 def get_single_motorcycle_crashes(df):
     '''
     Takes in a pandas dataframe that needs to be filtered down to only single motorcycle crash incidents.
-    This will only work if you have an existing 'Crash ID' column.
+    This will only work if you have an existing 'crash_id' column.
 
     INPUT:
     df = Pandas dataframe with data that needs to be filtered down into only crashes with a single motorcycle
@@ -377,14 +382,47 @@ def get_single_motorcycle_crashes(df):
     new_df = Filtered dataframe with only single motorcycle crashes
     '''
     original_df = df
-    count_of_people_involved_in_crash = original_df['Crash ID'].value_counts()
-    crashes_with_only_one_person = count_of_people_involved_in_crash[count_of_people_involved_in_crash == 1].index
-    crashes_with_only_one_person = crashes_with_only_one_person.to_list()
-    new_df = original_df[original_df['Crash ID'].isin(crashes_with_only_one_person)]
+    df = df[~df.crash_id.duplicated(keep=False)]
+    df = df[df.person_type.str.startswith('5')]
+    df = df[df.vehicle_body_style.str.startswith('MC') | df.vehicle_body_style.str.startswith('PM')]
+    new_df = df
     return new_df
 
 # =======================================================================================================
-# check_nulls END
-# check_nulls TO get_single_motorcycle_crashes
-# get_single_motorcycle_crashes START
+# get_single_motorcycle_crashes END
+# get_single_motorcycle_crashes TO drop_nullpct_alternate
+# drop_nullpct_alternate START
+# =======================================================================================================
+
+def drop_nullpct_alternate(df, percent_cutoff):
+    '''
+    THIS IS A MODIFIED VERSION THAT CHECKS FOR 'no data' INSTEAD OF NULLS!!!
+    Takes in a dataframe and a percent_cutoff of 'no data' to drop a column on
+    and returns the new dataframe and a dictionary of dropped columns and their pct...
+    
+    INPUT:
+    df = pandas dataframe
+    percent_cutoff = 'no data' percent cutoff amount
+    
+    OUTPUT:
+    new_df = pandas dataframe with dropped columns
+    drop_null_pct_dict = dict of column names dropped and pcts
+    '''
+    drop_nodata_pct_dict = {
+        'column_name' : [],
+        'percent_nodata' : []
+    }
+    for col in df:
+        pct = (df[col] == 'no data').sum() / df.shape[0]
+        if pct > percent_cutoff:
+            df = df.drop(columns=col)
+            drop_nodata_pct_dict['column_name'].append(col)
+            drop_nodata_pct_dict['percent_nodata'].append(pct)
+    new_df = df
+    return new_df, drop_nodata_pct_dict
+
+# =======================================================================================================
+# drop_nullpct_alternate END
+# drop_nullpct_alternate TO 
+#  START
 # =======================================================================================================
