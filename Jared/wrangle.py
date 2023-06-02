@@ -136,8 +136,12 @@ def split(df, stratify=None):
     validate = pandas dataframe with 20% of original dataframe
     test = pandas dataframe with 10% of original dataframe
     '''
-    train_val, test = train_test_split(df, train_size=0.9, random_state=1349, stratify=df[stratify])
-    train, validate = train_test_split(train_val, train_size=0.778, random_state=1349, stratify=train_val[stratify])
+    if stratify == None:
+        train_val, test = train_test_split(df, train_size=0.9, random_state=1349)
+        train, validate = train_test_split(train_val, train_size=0.778, random_state=1349)
+    else:
+        train_val, test = train_test_split(df, train_size=0.9, random_state=1349, stratify=df[stratify])
+        train, validate = train_test_split(train_val, train_size=0.778, random_state=1349, stratify=train_val[stratify])
     return train, validate, test
 
 
