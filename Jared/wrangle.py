@@ -90,6 +90,118 @@ def prepare():
         master.fillna('No Data', inplace=True)
         master = master.replace(to_replace=re.compile(r'.*no\s*data.*', re.IGNORECASE), value='no data', regex=True)
         svcs = get_single_motorcycle_crashes(master)
+        cols_to_remove = [
+        'driver_drug_specimen_type',
+        'person_drug_specimen_type',
+        'person_drug_test_result',
+        'driver_alcohol_result',
+        'driver_alcohol_specimen_type',
+        'person_alcohol_result',
+        'person_alcohol_specimen_type_taken',
+        'person_blood_alcohol_content_test_result',
+        'crash_non-suspected_serious_injury_count',
+        'crash_not_injured_count',
+        'crash_possible_injury_count',
+        'crash_suspected_serious_injury_count',
+        'crash_total_injury_count',
+        'crash_unknown_injury_count',
+        'unit_non-suspected_serious_injury_count',
+        'unit_not_injured_count',
+        'unit_possible_injury_count',
+        'unit_suspected_serious_injury_count',
+        'unit_total_injury_count',
+        'unit_unknown_injury_count',
+        'person_non-suspected_serious_injury_count',
+        'person_not_injured_count',
+        'person_possible_injury_count',
+        'person_suspected_serious_injury_count',
+        'person_total_injury_count',
+        'person_unknown_injury_count',
+        'crash_death_count',
+        'driver_time_of_death',
+        'unit_death_count',
+        'person_death_count',
+        'person_time_of_death',
+        'autonomous_level_engaged',
+        'autonomous_unit_-_reported',
+        'school_bus_flag',
+        'bus_type',
+        'cmv_actual_gross_weight',
+        'cmv_cargo_body_type',
+        'cmv_carrier_id_type',
+        'cmv_disabling_damage_-_power_unit',
+        'cmv_gvwr',
+        'cmv_hazmat_release_flag',
+        'cmv_intermodal_shipping_container_permit',
+        'cmv_rgvw',
+        'cmv_roadway_access',
+        'cmv_sequence_of_events_1',
+        'cmv_sequence_of_events_2',
+        'cmv_sequence_of_events_3',
+        'cmv_sequence_of_events_4',
+        'cmv_total_number_of_axles',
+        'cmv_total_number_of_tires',
+        'cmv_trailer_disabling_damage',
+        'cmv_trailer_gvwr',
+        'cmv_trailer_rgvw',
+        'cmv_trailer_type',
+        'cmv_vehicle_operation',
+        'cmv_vehicle_type',
+        'vehicle_cmv_flag',
+        'first_harmful_event',
+        'first_harmful_event_involvement',
+        'hazmat_class_1_id',
+        'hazmat_class_2_id',
+        'hazmat_id_number_1_id',
+        'hazmat_id_number_2_id',
+        'responder_struck_flag',
+        'unit_description',
+        'person_airbag_deployed',
+        'person_ejected',
+        'person_restraint_used',
+        'highway_lane_design_for_hov,_railroads,_and_toll_roads',
+        'railroad_company',
+        'railroad_flag',
+        'bridge_detail',
+        'feature_crossed_by_bridge',
+        'on_bridge_service_type',
+        'under_bridge_service_type',
+        'construction_zone_flag',
+        'construction_zone_workers_present_flag',
+        'commercial_motor_vehicle_flag',
+        'date_arrived',
+        'date_notified',
+        'date_roadway_cleared',
+        'date_scene_cleared',
+        'direction_of_traffic'
+        ]
+        svcs.drop(columns=cols_to_remove, inplace=True)
+        svcs, new_dict = drop_nullpct_alternate(svcs, 0.987)
+        drop_negone_pct_dict = {
+            'column_name' : [],
+            'percent_nodata' : []
+        }
+        for col in svcs:
+            pct = (svcs[col] == -1).sum() / svcs.shape[0]
+            if pct > 0.987:
+                svcs = svcs.drop(columns=col)
+                drop_negone_pct_dict['column_name'].append(col)
+                drop_negone_pct_dict['percent_nodata'].append(pct)
+        svcs.person_injury_severity = svcs.person_injury_severity.str.replace('C - POSSIBLE INJURY', 'B - SUSPECTED MINOR INJURY')
+        svcs = svcs[~(svcs.person_injury_severity == '99 - UNKNOWN')]
+        times_list = svcs.crash_time.astype(str).to_list()
+        fixed_times_list = []
+        for val in times_list:
+            if len(val) == 1:
+                val = '000' + val
+            elif len(val) == 2:
+                val = '00' + val
+            elif len(val) == 3:
+                val = '0' + val
+            fixed_times_list.append(val)
+        svcs.crash_time = fixed_times_list
+        svcs['crash_datetime'] = svcs.crash_date.str.strip() + ' ' + svcs.crash_time
+        svcs.crash_datetime = pd.to_datetime(svcs.crash_datetime)
         return svcs
 
 # =======================================================================================================
@@ -114,7 +226,7 @@ def wrangle():
         return svcs
     else:
         svcs = prepare()
-        svcs.to_csv('svcs.csv')
+        svcs.to_csv('svcs.csv', index=False)
         return svcs
     
 # =======================================================================================================
