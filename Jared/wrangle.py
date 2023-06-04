@@ -223,6 +223,7 @@ def wrangle():
     '''
     if os.path.exists('svcs.csv'):
         svcs = pd.read_csv('svcs.csv', index_col=0)
+        svcs.crash_datetime = pd.to_datetime(svcs.crash_datetime)
         return svcs
     else:
         svcs = prepare()
