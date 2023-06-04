@@ -202,6 +202,7 @@ def prepare():
         svcs.crash_time = fixed_times_list
         svcs['crash_datetime'] = svcs.crash_date.str.strip() + ' ' + svcs.crash_time
         svcs.crash_datetime = pd.to_datetime(svcs.crash_datetime)
+        svcs.reset_index(drop=True, inplace=True)
         return svcs
 
 # =======================================================================================================
@@ -227,7 +228,7 @@ def wrangle():
         return svcs
     else:
         svcs = prepare()
-        svcs.to_csv('svcs.csv', index=False)
+        svcs.to_csv('svcs.csv', index_label=False)
         return svcs
     
 # =======================================================================================================
