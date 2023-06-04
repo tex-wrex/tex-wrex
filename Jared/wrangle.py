@@ -18,6 +18,8 @@
 13. check_nulls
 14. get_single_motorcycle_crashes
 15. drop_nullpct_alternate
+16. risk_scores_single_column
+17. risk_scores_iterate_columns
 '''
 
 # =======================================================================================================
@@ -541,6 +543,81 @@ def drop_nullpct_alternate(df, percent_cutoff):
 
 # =======================================================================================================
 # drop_nullpct_alternate END
-# drop_nullpct_alternate TO 
+# drop_nullpct_alternate TO risk_scores_single_column
+# risk_scores_single_column START
+# =======================================================================================================
+
+def risk_scores_single_column(df, col_name):
+    '''
+    Takes in a pandas dataframe and the specific column that you want a specific
+    risk value for each specific value in the column...
+    Gives a list of risk values associated by each value in the column as well
+    as the dictionary of unique values and their risk value...
+    
+    INPUT:
+    df = Pandas dataframe for utilization
+    col_name = The exact column name within 'df' that you want
+    
+    OUTPUT:
+    risk_value_list = List of risk values by each value in the column
+    '''
+    risk_dict = {
+    'Unique Value' : [],
+    'Risk Score' : []
+    }
+    for unique_value in df[col_name].unique():
+        injury_distribution_dict = df[df[col_name] == unique_value]['person_injury_severity'].value_counts(normalize=True).to_dict()
+        for injury_type in injury_distribution_dict.keys():
+            if injury_type == 'A - SUSPECTED SERIOUS INJURY':
+                injury_distribution_dict['A - SUSPECTED SERIOUS INJURY'] = injury_distribution_dict['A - SUSPECTED SERIOUS INJURY'] * 2
+            elif injury_type == 'K - FATAL INJURY':
+                injury_distribution_dict['K - FATAL INJURY'] = injury_distribution_dict['K - FATAL INJURY'] * 3
+        risk_score = sum(injury_distribution_dict.values()) / 3
+        risk_dict['Unique Value'].append(unique_value)
+        risk_dict['Risk Score'].append(risk_score)
+    risk_value_list = []
+    for value in df[col_name]:
+        risk_index = risk_dict['Unique Value'].index(value)
+        risk = risk_dict['Risk Score'][risk_index]
+        risk_value_list.append(risk)
+    return risk_dict, risk_value_list
+
+# =======================================================================================================
+# risk_scores_single_column END
+# risk_scores_single_column TO risk_scores_iterate_columns
+# risk_scores_iterate_columns START
+# =======================================================================================================
+
+def risk_scores_iterate_columns(df, col_list):
+    '''
+    Takes in a pandas dataframe and a list of column names that you want to get a risk
+    score from and get an overal aggregate risk score by row...
+    Gives a list of aggregated risk values associated by each row in the dataframe as well
+    as a list of dictionaries for risk scores in each column...
+    
+    INPUT:
+    df = Pandas dataframe for utilization
+    col_list = List of exact column names you want an aggregate risk score from
+    
+    OUTPUT:
+    agg_risk_value_list = List of aggregated risk values by each value in the column
+    column_risk_value_list_of_dicts = List of dictionaries for each column and their risk scores
+    '''
+    col_and_risk_dict = {}
+    for col in col_list:
+        risk_score_dict, risk_score_list = risk_scores_single_column(df, col)
+        col_and_risk_dict[col] = risk_score_list
+    row_sum = pd.DataFrame(col_and_risk_dict).sum(axis=1).to_list()
+    column_agg = []
+    for value in row_sum:
+        row_agg = value / len(col_and_risk_dict)
+        column_agg.append(row_agg)
+    agg_risk_value_list = column_agg
+    column_risk_value_list_of_dicts = col_and_risk_dict
+    return agg_risk_value_list, column_risk_value_list_of_dicts
+
+# =======================================================================================================
+# risk_scores_iterate_columns END
+# risk_scores_iterate_columns TO 
 #  START
 # =======================================================================================================
