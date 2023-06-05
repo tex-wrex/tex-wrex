@@ -37,7 +37,7 @@
 <div style='background-color: orange'>
 <head>
     <h3 align='center'><b><i>
-        <a id='description'></a>Additional Project Resources
+        <a id='additional'></a>Additional Project Resources
     </i></b></h3>
 </head></div>
 <a href='#tableofcontents'>Back to 'Table of Contents'</a>
