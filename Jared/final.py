@@ -680,7 +680,46 @@ def stat4():
 # models START
 # =======================================================================================================
 
+def models():
+    '''
+    Shows the best model created from an iteration of gridsearchcv for each unique classification
+    model and returns it as a pandas dataframe.
 
+    INPUT:
+    NONE
+
+    OUTPUT:
+    models_df = Pandas dataframe of best model for each unique classification model
+    '''
+    models_df = {'Model': {0: 'Decision Tree',
+                           1: 'Random Forest',
+                           2: 'KNN',
+                           3: 'Logistic Regression',
+                           4: 'Baseline'},
+                'Best Estimator': {0: DecisionTreeClassifier(max_depth=3, random_state=1776),
+                                   1: RandomForestClassifier(max_depth=3, random_state=1776),
+                                   2: KNeighborsClassifier(algorithm='ball_tree', n_neighbors=50),
+                                   3: LogisticRegression(C=10, random_state=1776, solver='sag'),
+                                   4: Baseline(mode)},
+                'Best Parameters': {0: {'max_depth': 3,
+                                        'min_samples_leaf': 1,
+                                        'min_samples_split': 2,
+                                        'random_state': 1776},
+                                    1: {'max_depth': 3,
+                                        'min_samples_leaf': 1,
+                                        'min_samples_split': 2,
+                                        'n_estimators': 100,
+                                        'random_state': 1776},
+                                    2: {'algorithm': 'ball_tree', 'n_neighbors': 50, 'weights': 'uniform'},
+                                    3: {'C': 10, 'random_state': 1776, 'solver': 'sag'},
+                                    4: {'Baseline-Mode'}},
+                'Train Accuracy': {0: 0.6117491569838304,
+                                   1: 0.6123532847160152,
+                                   2: 0.6088263792963353,
+                                   3: 0.6039898533355001,
+                                   4: 0.575}}
+    models_df = pd.DataFrame(models_df)
+    return models_df
 
 # =======================================================================================================
 # models END
