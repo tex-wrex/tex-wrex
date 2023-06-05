@@ -230,8 +230,13 @@ Due to the extensive amount of columns (254) in the dataset, this data dictionar
     5. 'End Year' == 2022
     6. Under 'Select Crash Location', select 'Search All of Texas'
     7. Under 'Filters Authorized by TxDOT, select ONLY 'Motorcycle Related Crashes'
-    8. Click 'Save'
-    9. 
+    8. Click 'View Results'
+    9. Click 'Create an Attribute List'
+    10. In 'Select Columns', select ALL BOXES that are available
+    11. Click 'Export CSV', should automatically download as 'my_list.csv'
+    12. Open 'my_list.csv' and remove the first 10 lines (Or however manner that are above the column names) so that it can properly be read in a pandas dataframe
+    13. Rename 'my_list.csv' to 'master_list.csv'
+    14. Move 'master_list.csv' to wherever you cloned this repo so that you can use it
 3. Run a virtual environment with the 'requirements.txt' file
 4. Run desired files/operations
 <br><br><br>
