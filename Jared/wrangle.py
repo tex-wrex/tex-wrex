@@ -20,6 +20,7 @@
 15. drop_nullpct_alternate
 16. risk_scores_single_column
 17. risk_scores_iterate_columns
+18. gridsearchcv_hyperparameter_tuning
 '''
 
 # =======================================================================================================
@@ -43,6 +44,11 @@ import numpy as np
 import pandas as pd
 import re
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
 import os
 
 # =======================================================================================================
@@ -618,6 +624,73 @@ def risk_scores_iterate_columns(df, col_list):
 
 # =======================================================================================================
 # risk_scores_iterate_columns END
-# risk_scores_iterate_columns TO 
+# risk_scores_iterate_columns TO gridsearchcv_hyperparameter_tuning
+# gridsearchcv_hyperparameter_tuning START
+# =======================================================================================================
+
+def gridsearchcv_hyperparameter_tuning(train_df, validate_df, feature_selection_list, target_feature):
+    '''
+    Takes in a train and validate pandas datasets, list of column names to train models
+    off of, and the target column name in order to find the best hyperparameters. 
+    For classification models like DecisionTreeClassifier, RandomForestClassifier,
+    K-Nearest Neighbors, and Logistic Regression and returns a pandas dataframe
+    with the best perfroming model for each unique classification model.
+    
+    IMPORTANT:
+    This currently DOES NOT encode anything, so please ensure features are
+    encoded prior to input.
+    
+    INPUT:
+    train_df = Pandas dataframe of the training dataset
+    validate_df = Pandas dataframe of the validation dataset
+    feature_selection_list = List of column names to train model off of
+    target_feature = Column name of the target variable
+    
+    OUTPUT:
+    df_model_results = Pandas dataframe of the best performing model per
+                       unique classification model
+    '''
+    train_x = train_df[feature_selection_list]
+    train_y = train_df[target_feature]
+    validate_x = validate_df[feature_selection_list]
+    validate_y = validate_df[target_feature]
+    models = {
+    'Decision Tree' : (DecisionTreeClassifier(), {'max_depth' : [None] + list(range(3, 15)),
+                                                  'min_samples_split' : list(range(2, 4)),
+                                                  'min_samples_leaf' : list(range(1, 3)),
+                                                  'random_state' : [1776]}),
+    'Random Forest' : (RandomForestClassifier(), {'n_estimators' : [100, 200, 300],
+                                                  'max_depth' : [None] + list(range(3, 15)),
+                                                  'min_samples_split' : list(range(2, 4)),
+                                                  'min_samples_leaf' : list(range(1, 3)),
+                                                  'random_state' : [1776]}),
+    'KNN' : (KNeighborsClassifier(), {'n_neighbors' : [5, 10, 50],
+                                      'weights' : ['uniform', 'distance'],
+                                      'algorithm' : ['ball_tree', 'kd_tree', 'brute', 'auto']}),
+    'Logistic Regression' : (LogisticRegression(), {'C' : [0.1, 1, 10],
+                                                    'solver' : ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga'],
+                                                    'random_state' : [1776]})
+    }
+    model_results = []
+    for model_name, (model, param_grid) in models.items():
+        grid_search = GridSearchCV(model, param_grid, scoring='accuracy', cv=5)
+        grid_search.fit(train_x, train_y)
+        best_model = grid_search.best_estimator_
+        best_params = grid_search.best_params_
+        train_accuracy = grid_search.best_score_
+        validate_accuracy = best_model.score(validate_x, validate_y)
+        model_results.append({
+            'Model': model_name,
+            'Best Estimator': best_model,
+            'Best Parameters': best_params,
+            'Train Accuracy': train_accuracy,
+            'Validate Accuracy': validate_accuracy
+        })
+    df_model_results = pd.DataFrame(model_results)
+    return df_model_results
+
+# =======================================================================================================
+# gridsearchcv_hyperparameter_tuning END
+# gridsearchcv_hyperparameter_tuning TO 
 #  START
 # =======================================================================================================
