@@ -45,7 +45,7 @@
 <h5>
 Hyperlink list of additional project resources:
 <li><a href='https://cris.dot.state.tx.us/public/Query/app/home'>CRIS Query</a></li>
-<li><a href='CANVA LINK HERE'>Canva Presentation (UNFINISHED)</a></li>
+<li><a href='https://www.canva.com/design/DAFkmDnkHN0/zq2MpInKm-TME4-m1UmwRA/edit?utm_content=DA[…]m_campaign=designshare&utm_medium=link2&utm_source=sharebutton'>Canva Presentation</a></li>
 </h5>
 <br><br><br>
 
@@ -181,7 +181,7 @@ Questions:
 <li>Deliver takeaways</li>
 <br>
 <h4><b>Deliverables</b></h4>
-<li>Canva Presentation <a href='PUT LINK HERE'>CLICK HERE (UNFINISHED)</a></li>
+<li>Canva Presentation <a href='https://www.canva.com/design/DAFkmDnkHN0/zq2MpInKm-TME4-m1UmwRA/edit?utm_content=DA[…]m_campaign=designshare&utm_medium=link2&utm_source=sharebutton'>CLICK HERE</a></li>
 <li>Full and complete group repository with pertinent work.</li>
 <br><br><br>
 
