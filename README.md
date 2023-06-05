@@ -201,8 +201,18 @@ Questions:
 <br><br>
 
 1. Clone this repo
-2. Run a virtual environment with the 'requirements.txt' file
-3. Run desired files/operations
+2. Obtain 'master_list.csv'
+    1. Go to <a href='https://cris.dot.state.tx.us/public/Query/app/query-builder'>CRIS Query Builder</a>
+    2. Accept the Query Disclaimer
+    3. Under 'Select Crash Date and Time', select 'Select Crashes from a range of years'
+    4. 'Begin Year' == 2018
+    5. 'End Year' == 2022
+    6. Under 'Select Crash Location', select 'Search All of Texas'
+    7. Under 'Filters Authorized by TxDOT, select ONLY 'Motorcycle Related Crashes'
+    8. Click 'Save'
+    9. 
+3. Run a virtual environment with the 'requirements.txt' file
+4. Run desired files/operations
 <br><br><br>
 
 
