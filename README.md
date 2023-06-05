@@ -150,9 +150,30 @@ Questions:
 <a href='#tableofcontents'>Back to 'Table of Contents'</a>
 <br><br>
 
+Due to the extensive amount of columns (254) in the dataset, this data dictionary only includes the columns used in the modeling phase as to avoid having a massive data dictionary.
+
 | Feature Name | Data Type | Description | Example |
 | ----- | ----- | ----- | ----- |
 | feature | bool | True/False | True |
+| crash_id | int | ID # of the crash incident | 16189632 |
+| person_age | int | Age of the individual involved in the crash | 37 |
+| charge | object | Charge given to a person involved in the crash | OPERATE UNREGISTERED MOTOR VEHICLE |
+| person_ethnicity | object | Ethnicity of the person involved in the crash | w - white |
+| crash_date | object | (YYYY-MM-DD) Date that the crash occured on | 2018-01-01 |
+| day_of_week | object | Name of the day of the week that the crash occured on | monday |
+| person_gender | object | Gender of the person involved in the crash | 1 - male |
+| person_helmet | object | If a helmet was worn and/or the condition of the helmet of the person involved in the crash | 1 - not worn |
+| driver_license_class | object | The driver license class of the person involved in the crash | c - class c |
+| driver_license_state | object | The state that gave the driver license to in relation to the person involved in the crash | tx - texas |
+| driver_license_type | object | The type of driver license the person involved in the crash had | 1 - driver license |
+| person_injury_severity | object | The level of injury severity sustained by the person involved in the crash (TARGET VARIABLE) | a - suspected serious injury |
+| license_plate_state | object | The state of the license plate on the vehicle in the crash | tx - texas |
+| vehicle_body_style | object | The type of vehicle involved in the crash | mc - motorcycle |
+| vehicle_color | object | The color that the vehicle was at the crash | blu - blue |
+| vehicle_defect_1 | object | Vehicle defects at the time of the crash | 5 - defective or no headlamps |
+| vehicle_make | object | The make of the vehicle at the crash | suzuku |
+| vehicle_model_name | object | The name of the vehicle's model at the crash | gsx-r600 (suzuki) |
+| vehicle_model_year | object | The year of the vehicle make that was at the crash | 2004 |
 
 <br><br><br>
 
@@ -230,13 +251,22 @@ Questions:
 <br><br>
 <h4><b>Summary:</b></h4>
 
-- Summarization here
+- When strictly looking at what causes single motorcycle crash incidents, there is a pattern of being later in the evening, during warmer months, and generally grouped in areas with curves and hazards in the road.  In relation to the injury severity, that gets more complex, but a combination of the driver's background and the information of their motorcycle can lead to a fairly accurate predictive model.
 <br><br>
 <h4><b>Recommendations:</b></h4>
 
-- Recommendations here
+- Our model is {acc_score}% accurate in predicting the level of injury severity for a motorcyclist should they get into a single motorcycle crash.  Because of this, implementing our model or our aggregated risk score for an individual may prove useful in determining the individual's insurance premium cost.
 <br><br>
 <h4><b>Next Steps:</b></h4>
 
-- Next steps here
+- Attempt to derive more in-depth location data
+    - Residency (Rural/Urban)
+    - Population density/sq.mile
+    - What kind of roads to expect in immeadiate vicinity (Highway/non)
+    - How often are there curves in the road
+- Attempt to derive more information about the driver's driving habits
+    - How far do they drive on average
+    - What vehicles do they normally drive
+    - What is their crash history
+- Attempt to get a more accurate model that also reflects in the individual injury risk value for the person
 <br><br>
