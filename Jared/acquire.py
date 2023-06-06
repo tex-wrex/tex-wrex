@@ -33,7 +33,7 @@ def prepare_filtered_dataset_version():
     new_df = Pandas dataframe of the filtered dataset
     '''
     if os.path.exists('master_modeling.csv'):
-        new_df = pd.read_csv('master_modeling.csv', index_col=0)
+        new_df = pd.read_csv('master_modeling.csv')
         return new_df
     else:
         old_df = acquire_motocycle_data()
@@ -85,7 +85,7 @@ def prepare_second_filtered_dataset_version():
     new_df = Pandas dataframe of the filtered dataset
     '''
     if os.path.exists('master_modeling_updated.csv'):
-        new_df = pd.read_csv('master_modeling_updated.csv', index_col=0)
+        new_df = pd.read_csv('master_modeling_updated.csv')
         return new_df
     else:
         df = prepare_filtered_dataset_version()
@@ -145,7 +145,7 @@ def prepare_third_filtered_dataset_version():
     new_df = Pandas dataframe of the filtered dataset
     '''
     if os.path.exists('master_modeling_updated1.csv'):
-        df = pd.read_csv('master_modeling_updated1.csv', index_col=0)
+        df = pd.read_csv('master_modeling_updated1.csv')
         return df
     else:
         df = prepare_second_filtered_dataset_version()
