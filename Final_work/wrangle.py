@@ -126,3 +126,44 @@ def prepare_second_filtered_dataset_version():
         new_df = df
         new_df.to_csv('master_modeling_updated.csv', index=False)
         return df
+    
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+    
+def prepare_third_filtered_dataset_version():
+    '''
+    Takes the dataset from the 'acquire_motocycle_data()' function and filters out
+    unnecessary data in order to replicate the dataset from Gabe's
+    'master_modeling_updated1.csv' file.
+    
+    INPUT:
+    NONE
+    
+    OUTPUT:
+    master_modeling_updated1.csv = IF NONEXISTANT, .csv file of the filtered dataset
+    new_df = Pandas dataframe of the filtered dataset
+    '''
+    if os.path.exists('master_modeling_updated1.csv'):
+        df = pd.read_csv('master_modeling_updated1.csv', index_col=0)
+        return df
+    else:
+        df = prepare_second_filtered_dataset_version()
+        make_country = {
+            'honda': 'Japan',
+            'yamaha': 'Japan',
+            'suzuki': 'Japan',
+            'kawasaki': 'Japan',
+            'harley-davidson': 'USA',
+            'bmw': 'Germany',
+            'ducati': 'Italy',
+            'triumph': 'UK',
+            'ktm': 'Austria',
+            'aprilia': 'Italy',
+            'indian': 'USA'
+        }
+        df['vehicle_make_country'] = df['vehicle_make'].map(make_country)
+        df['vehicle_make_country'].fillna('Other', inplace=True)
+        df['injury_binary'] = df['person_injury_severity'].apply(lambda x: 0 if x == 'n - not injured' else 1)
+        df.to_csv('master_modeling_updated1.csv', index=False)
+        return df
