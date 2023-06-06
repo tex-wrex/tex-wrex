@@ -167,3 +167,21 @@ def prepare_third_filtered_dataset_version():
         df['injury_binary'] = df['person_injury_severity'].apply(lambda x: 0 if x == 'n - not injured' else 1)
         df.to_csv('master_modeling_updated1.csv', index=False)
         return df
+    
+    
+    
+    
+def split(df):
+    '''
+    This function splits a dataframe into 
+    train, validate, and test in order to explore the data and to create and validate models. 
+    It takes in a dataframe and contains an integer for setting a seed for replication. 
+    Test is 20% of the original dataset. The remaining 80% of the dataset is 
+    divided between valiidate and train, with validate being .30*.80= 24% of 
+    the original dataset, and train being .70*.80= 56% of the original dataset. 
+    The function returns, train, validate and test dataframes. 
+    '''
+    train, test = train_test_split(df, test_size = .2, random_state=123)   
+    train, validate = train_test_split(train, test_size=.3, random_state=123)
+    
+    return train, validate, test
