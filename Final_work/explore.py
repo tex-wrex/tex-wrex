@@ -2,7 +2,7 @@ import pandas as pd
 from scipy.stats import chi2_contingency
 
 
-def perform_chi_square_test(df, gender_column, injury_column):
+def perform_chi_square_test(df, column_name, injury_column):
     # Create the contingency table
     contingency_table = pd.crosstab(df[gender_column], df[injury_column])
     
