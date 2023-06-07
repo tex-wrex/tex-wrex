@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
 from sklearn.model_selection import train_test_split
 
 
@@ -191,3 +193,345 @@ def split(df):
     train, validate = train_test_split(train, test_size=.3, random_state=123)
     
     return train, validate, test
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_age_visual():
+    '''
+    Displays the injury type distribution for age groups.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Visual
+    '''
+    master = prepare_third_filtered_dataset_version()
+    bins = [0, 20, 30, 40, 50, 60, float('inf')]
+    labels = ['<20', '20s', '30s', '40s', '50s', '60+']
+    master['age_range'] = pd.cut(master['person_age'], bins=bins, labels=labels, right=False)
+    cross_tab = pd.crosstab(master.age_range, master.person_injury_severity, normalize='index')
+    desired_order = ['n - not injured', 'b - suspected minor injury', 'a - suspected serious injury', 'k - fatal injury']
+    cross_tab = cross_tab[desired_order]
+    colors = ['green', 'pink', 'darkorange', 'red']
+    ax = cross_tab.plot(kind='bar', color=colors)
+    plt.title('Injury Severity Percent Distribution By Age Group')
+    plt.xlabel('Age Group')
+    plt.xticks(rotation=0)
+    plt.ylabel('Percentage')
+    for p in ax.patches:
+        ax.annotate(f"{p.get_height():.1%}", (p.get_x() + p.get_width() / 2., p.get_height()), ha='center', va='center', xytext=(0, 5), textcoords='offset points')
+    legend = plt.legend(loc='upper right', prop={'size': 9})
+    legend.set_bbox_to_anchor((1.46, 1))
+    plt.show()
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_age_stattest():
+    '''
+    Displays the chi2_contingency statistic tests for all combinations of 
+    injury type vs. age groups.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Statistic tests
+    '''
+    master = prepare_third_filtered_dataset_version()
+    bins = [0, 20, 30, 40, 50, 60, float('inf')]
+    labels = ['<20', '20s', '30s', '40s', '50s', '60+']
+    master['age_range'] = pd.cut(master['person_age'], bins=bins, labels=labels, right=False)
+    for vals in master.age_range.unique():
+        for val in master.injury_binary.unique():
+            observed = pd.crosstab(master.age_range == vals, master.injury_binary == val)
+            stat, p, dof, a = stats.chi2_contingency(observed)
+            alpha = 0.05
+            if p < 0.05:
+                print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mAge Range:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+            else:
+                print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mAge Range:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_ethnicity_visual():
+    '''
+    Displays the injury type distribution for ethnicity.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Visual
+    '''
+    master = prepare_third_filtered_dataset_version()
+    cross_tab = pd.crosstab(master.person_ethnicity[~master.person_ethnicity.str.startswith(('98', '99'))], master.person_injury_severity, normalize='index')
+    desired_order = ['n - not injured', 'b - suspected minor injury', 'a - suspected serious injury', 'k - fatal injury']
+    cross_tab = cross_tab[desired_order]
+    colors = ['green', 'pink', 'darkorange', 'red']
+    ax = cross_tab.plot(kind='bar', color=colors)
+    plt.title('Injury Severity Percent Distribution By Ethnicity')
+    plt.xlabel('Ethnicity')
+    plt.xticks(rotation=90)
+    plt.ylabel('Percentage')
+    for p in ax.patches:
+        ax.annotate(f"{p.get_height():.1%}", (p.get_x() + p.get_width() / 2., p.get_height()), ha='center', va='center', xytext=(0, 5), textcoords='offset points')
+    legend = plt.legend(loc='upper right', prop={'size': 9})
+    legend.set_bbox_to_anchor((1.46, 1))
+    plt.show()
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_ethnicity_stattest():
+    '''
+    Displays the chi2_contingency statistic tests for all combinations of 
+    injury type vs. ethnicity.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Statistic tests
+    '''
+    master = prepare_third_filtered_dataset_version()
+    for vals in master.person_ethnicity[~master.person_ethnicity.str.startswith(('98', '99'))].unique():
+        for val in master.injury_binary.unique():
+            observed = pd.crosstab(master.person_ethnicity == vals, master.injury_binary == val)
+            stat, p, dof, a = stats.chi2_contingency(observed)
+            alpha = 0.05
+            if p < 0.05:
+                print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mEthnicity:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+            else:
+                print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mEthnicity:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_endorsement_visual():
+    '''
+    Displays the injury type distribution for whether or not someone had a motorcycle endorsement.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Visual
+    '''
+    master = prepare_third_filtered_dataset_version()
+    cross_tab = pd.crosstab(master.has_motocycle_endorsment, master.person_injury_severity, normalize='index')
+    desired_order = ['n - not injured', 'b - suspected minor injury', 'a - suspected serious injury', 'k - fatal injury']
+    cross_tab = cross_tab[desired_order]
+    colors = ['green', 'pink', 'darkorange', 'red']
+    ax = cross_tab.plot(kind='bar', color=colors)
+    plt.title('Injury Severity Percent Distribution By Motorcycle Endorsement')
+    plt.xlabel('Has Motorcycle Endorsement')
+    plt.xticks(rotation=0, ticks=range(2), labels=['False', 'True'])
+    plt.ylabel('Percentage')
+    for p in ax.patches:
+        ax.annotate(f"{p.get_height():.1%}", (p.get_x() + p.get_width() / 2., p.get_height()), ha='center', va='center', xytext=(0, 5), textcoords='offset points')
+    legend = plt.legend(loc='upper right', prop={'size': 9})
+    legend.set_bbox_to_anchor((1.46, 1))
+    plt.show()
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_endorsement_stattest():
+    '''
+    Displays the chi2_contingency statistic tests for all combinations of 
+    injury type vs. motorcycle endorsement.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Statistic tests
+    '''
+    master = prepare_third_filtered_dataset_version()
+    for vals in master.has_motocycle_endorsment.unique():
+        for val in master.injury_binary.unique():
+            observed = pd.crosstab(master.has_motocycle_endorsment == vals, master.injury_binary == val)
+            stat, p, dof, a = stats.chi2_contingency(observed)
+            alpha = 0.05
+            if p < 0.05:
+                print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mMotorcycle Endorsement:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+            else:
+                print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mMotorcycle Endorsement:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_body_style_visual():
+    '''
+    Displays the injury type distribution for the body style of the motorcycle.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Visual
+    '''
+    master = prepare_third_filtered_dataset_version()
+    cross_tab = pd.crosstab(master.vehicle_body_style, master.person_injury_severity, normalize='index')
+    desired_order = ['n - not injured', 'b - suspected minor injury', 'a - suspected serious injury', 'k - fatal injury']
+    cross_tab = cross_tab[desired_order]
+    colors = ['green', 'pink', 'darkorange', 'red']
+    ax = cross_tab.plot(kind='bar', color=colors)
+    plt.title('Injury Severity Percent Distribution By Motorcycle Body Style')
+    plt.xlabel('Motorcycle Body Style')
+    plt.xticks(rotation=0, ticks=range(2), labels=['Motorcycle', 'Police Motorcycle'])
+    plt.ylabel('Percentage')
+    for p in ax.patches:
+        ax.annotate(f"{p.get_height():.1%}", (p.get_x() + p.get_width() / 2., p.get_height()), ha='center', va='center', xytext=(0, 5), textcoords='offset points')
+    legend = plt.legend(loc='upper right', prop={'size': 9})
+    legend.set_bbox_to_anchor((1.46, 1))
+    plt.show()
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_body_style_stattest():
+    '''
+    Displays the chi2_contingency statistic tests for all combinations of 
+    injury type vs. motorcycle body style.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Statistic tests
+    '''
+    master = prepare_third_filtered_dataset_version()
+    for vals in master.vehicle_body_style.unique():
+        for val in master.injury_binary.unique():
+            observed = pd.crosstab(master.vehicle_body_style == vals, master.injury_binary == val)
+            stat, p, dof, a = stats.chi2_contingency(observed)
+            alpha = 0.05
+            if p < 0.05:
+                print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mMotorcycle Body Style:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+            else:
+                print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mMotorcycle Body Style:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_color_visual():
+    '''
+    Displays the injury type distribution for the motorcycle color.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Visual
+    '''
+    master = prepare_third_filtered_dataset_version()
+    cross_tab = pd.crosstab(master.vehicle_color.str.startswith(('bro', 'gld')), master.person_injury_severity, normalize='index')
+    desired_order = ['n - not injured', 'b - suspected minor injury', 'a - suspected serious injury', 'k - fatal injury']
+    cross_tab = cross_tab[desired_order]
+    colors = ['green', 'pink', 'darkorange', 'red']
+    ax = cross_tab.plot(kind='bar', color=colors)
+    plt.title('Injury Severity Percent Distribution By Motorcycle Color (Brown, Gold)')
+    plt.xlabel('Motorcycle Color')
+    plt.xticks(rotation=0, ticks=range(2), labels=['Brown', 'Gold'])
+    plt.ylabel('Percentage')
+    for p in ax.patches:
+        ax.annotate(f"{p.get_height():.1%}", (p.get_x() + p.get_width() / 2., p.get_height()), ha='center', va='center', xytext=(0, 5), textcoords='offset points')
+    legend = plt.legend(loc='upper right', prop={'size': 9})
+    legend.set_bbox_to_anchor((1.46, 1))
+    plt.show()
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_color_stattest():
+    '''
+    Displays the chi2_contingency statistic tests for all combinations of 
+    injury type vs. motorcycle color.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Statistic tests
+    '''
+    master = prepare_third_filtered_dataset_version()
+    for vals in master.vehicle_color.unique():
+        for val in master.injury_binary.unique():
+            observed = pd.crosstab(master.vehicle_color == vals, master.injury_binary == val)
+            stat, p, dof, a = stats.chi2_contingency(observed)
+            alpha = 0.05
+            if p < 0.05:
+                print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mMotorcycle Color:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+            else:
+                print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mMotorcycle Color:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_make_country_visual():
+    '''
+    Displays the injury type distribution for motorcycle's make country.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Visual
+    '''
+    master = prepare_third_filtered_dataset_version()
+    cross_tab = pd.crosstab(master.vehicle_make_country, master.person_injury_severity, normalize='index')
+    desired_order = ['n - not injured', 'b - suspected minor injury', 'a - suspected serious injury', 'k - fatal injury']
+    cross_tab = cross_tab[desired_order]
+    colors = ['green', 'pink', 'darkorange', 'red']
+    ax = cross_tab.plot(kind='bar', color=colors)
+    plt.title('Injury Severity Percent Distribution By Motorcycle Make Country')
+    plt.xlabel('Motorcycle Make Country')
+    plt.xticks(rotation=0)
+    plt.ylabel('Percentage')
+    for p in ax.patches:
+        ax.annotate(f"{p.get_height():.1%}", (p.get_x() + p.get_width() / 2., p.get_height()), ha='center', va='center', xytext=(0, 5), textcoords='offset points')
+    legend = plt.legend(loc='upper right', prop={'size': 9})
+    legend.set_bbox_to_anchor((1.46, 1))
+    plt.show()
+
+# ==========================================================================================
+# ==========================================================================================
+# ==========================================================================================
+  
+def get_motorcycle_make_country_stattest():
+    '''
+    Displays the chi2_contingency statistic tests for all combinations of 
+    injury type vs. age groups.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    Statistic tests
+    '''
+    master = prepare_third_filtered_dataset_version()
+    for vals in master.vehicle_make_country.unique():
+        for val in master.injury_binary.unique():
+            observed = pd.crosstab(master.vehicle_make_country == vals, master.injury_binary == val)
+            stat, p, dof, a = stats.chi2_contingency(observed)
+            alpha = 0.05
+            if p < 0.05:
+                print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mMake Country:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+            else:
+                print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mMake Country:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
