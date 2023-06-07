@@ -4,8 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 from sklearn.model_selection import train_test_split
-
-
+from sklearn.linear_model import LogisticRegression
+from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import classification_report
 
 
 def acquire_motocycle_data():
@@ -535,3 +538,165 @@ def get_motorcycle_make_country_stattest():
                 print(f'\033[32m========== REJECT NULL HYPOTHESIS ==========\033[0m\n\033[35mMake Country:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
             else:
                 print(f'\033[31m========== ACCEPT NULL HYPOTHESIS ==========\033[0m\n\033[35mMake Country:\033[0m {vals}\n\033[35mInjury:\033[0m {val}\n\033[35mStatistic:\033[0m {stat}\n\033[35mP-Value:\033[0m {p}\n')
+                
+                
+                
+# Modeling
+# =====================================================================================================================
+
+def get_encoded_df():
+    cols_to_drop = ['crash_id', 'person_injury_severity', 'injury_binary']
+    df = prepare_third_filtered_dataset_version()
+    df_encoded = df.copy()
+
+    for col in df.columns:
+        if col not in cols_to_drop:
+            df_encoded = pd.get_dummies(df_encoded, columns=[col], drop_first=True, dtype=int)
+    return df_encoded
+
+
+def get_safety_score():
+    '''
+    return the dataframe with safety_score. 
+    
+    '''
+    
+    if os.path.exists('modeling_with_safety_score.csv'):
+        pd.read_csv('modeling_with_safety_score.csv')
+    else:
+        cols_to_drop = ['crash_id', 'person_injury_severity', 'injury_binary']
+        df = prepare_third_filtered_dataset_version()
+        df_encoded = df.copy()
+
+        for col in df.columns:
+            if col not in cols_to_drop:
+                df_encoded = pd.get_dummies(df_encoded, columns=[col], drop_first=True, dtype=int)
+        x = df_encoded.drop(columns=cols_to_drop)
+        train, validate, test = split(df_encoded)
+        X_train = train.drop(columns=cols_to_drop)
+        y_train = train['injury_binary']
+
+        X_validate = validate.drop(columns=cols_to_drop)
+        y_validate = validate['injury_binary']
+
+        X_test = test.drop(columns=cols_to_drop)
+        y_test = test['injury_binary']
+        pred_train = pd.DataFrame()
+        pred_val = pd.DataFrame()
+        pred_test = pd.DataFrame() 
+        pred_val['actual'] = y_validate
+        pred_test['actual'] = y_test
+        # making the safety score 
+        model = LogisticRegression(max_iter=1000)
+
+        # Train the model
+        model.fit(X_train, y_train)
+
+        # Predict the probabilities of injury on the validation set
+        y_val_pred = model.predict_proba(X_validate)[:, 1]
+
+
+        pred_train['logistic'] = model.predict(X_train)
+        pred_val['logistic'] = model.predict(X_validate)
+        y_test_pred = model.predict_proba(X_test)[:, 1]
+        df_encoded['safety_score'] = model.predict_proba(x)[:, 1]
+        df['safety_score']= df_encoded.safety_score
+        df.to_csv('modeling_with_safety_score.csv')
+
+        return df
+    
+    
+def get_modeling_metrics():
+    cols_to_drop = ['crash_id', 'person_injury_severity', 'injury_binary']
+    df = prepare_third_filtered_dataset_version()
+    df_encoded = df.copy()
+
+    for col in df.columns:
+        if col not in cols_to_drop:
+            df_encoded = pd.get_dummies(df_encoded, columns=[col], drop_first=True, dtype=int)
+    x = df_encoded.drop(columns=cols_to_drop)
+    train, validate, test = split(df_encoded)
+    X_train = train.drop(columns=cols_to_drop)
+    y_train = train['injury_binary']
+
+    X_validate = validate.drop(columns=cols_to_drop)
+    y_validate = validate['injury_binary']
+
+    X_test = test.drop(columns=cols_to_drop)
+    y_test = test['injury_binary']
+
+
+    # Lets make a new df to store our predictions so we can evaluate them later.
+    pred_train = pd.DataFrame()
+    pred_val = pd.DataFrame()
+    pred_test = pd.DataFrame() 
+    
+    # set the datafrtames witht he actual values 
+    pred_train['actual'] = y_train
+    pred_val['actual'] = y_validate
+    pred_test['actual'] = y_test
+    
+    # making the safety score 
+    model = LogisticRegression(max_iter=1000)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Predict the probabilities of injury on the validation set
+    y_val_pred = model.predict_proba(X_validate)[:, 1]
+
+
+    pred_train['logistic'] = model.predict(X_train)
+    pred_val['logistic'] = model.predict(X_validate)
+    y_test_pred = model.predict_proba(X_test)[:, 1]
+    df_encoded['safety_score'] = model.predict_proba(x)[:, 1]
+    df['safety_score']= df_encoded.safety_score
+    
+    pred_train['logistic'] = model.predict(X_train)
+    # Descion Tree modeling
+    clf = tree.DecisionTreeClassifier(max_depth=10)
+    clf.fit(X_train, y_train)
+    
+    pred_train['descion_tree'] = clf.predict(X_train)
+    pred_val['descion_tree'] = clf.predict(X_validate)   
+    pred_test['descion_tree'] = clf.predict(X_test)
+    
+    # random Forest modeling
+    
+    # make the model
+    rf = RandomForestClassifier(max_depth= 10, random_state= 666)
+    # fit the model
+    rf.fit(X_train,y_train)
+    # run the model
+    pred_train['random_forest'] = rf.predict(X_train)
+    # run the model to validate training model
+    pred_val['random_forest'] = rf.predict(X_validate)
+    
+    gbc = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0,max_depth=1, random_state=666).fit(X_train, y_train)
+    pred_train['gbc'] = gbc.predict(X_train)
+    pred_val['gbc'] = gbc.predict(X_validate)
+    
+    
+    for cols in pred_train.columns:
+        if not (pred_train[cols] == pred_train['actual']).all():
+            print(f'classification_report for {cols} with training data')
+            print('=====================================================')
+            print(classification_report(pred_train.actual, pred_train[cols]))
+
+    for cols in pred_val.columns:
+        if not (pred_val[cols] == pred_val['actual']).all():
+            print(f'classification_report for {cols} with validate data')
+            print('=====================================================')
+            print(classification_report(pred_val.actual, pred_val[cols]))
+
+    for cols in pred_test.columns:
+        if not (pred_test[cols] == pred_test['actual']).all():
+            print(f'classification_report for {cols} with test data')
+            print('=====================================================')
+            print(classification_report(pred_test.actual, pred_test[cols]))
+            
+            
+
+    
+
+
