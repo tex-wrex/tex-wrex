@@ -155,17 +155,17 @@ def prepare_third_filtered_dataset_version():
     else:
         df = prepare_second_filtered_dataset_version()
         make_country = {
-            'honda': 'Japan',
-            'yamaha': 'Japan',
-            'suzuki': 'Japan',
-            'kawasaki': 'Japan',
-            'harley-davidson': 'USA',
+            'honda': 'japan',
+            'yamaha': 'japan',
+            'suzuki': 'japan',
+            'kawasaki': 'japan',
+            'harley-davidson': 'usa',
             'bmw': 'Germany',
-            'ducati': 'Italy',
-            'triumph': 'UK',
-            'ktm': 'Austria',
-            'aprilia': 'Italy',
-            'indian': 'USA'
+            'ducati': 'italy',
+            'triumph': 'uk',
+            'ktm': 'austria',
+            'aprilia': 'italy',
+            'indian': 'usa'
         }
         df['vehicle_make_country'] = df['vehicle_make'].map(make_country)
         df['vehicle_make_country'].fillna('Other', inplace=True)
