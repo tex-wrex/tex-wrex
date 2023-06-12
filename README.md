@@ -63,7 +63,7 @@ Hyperlink list of additional project resources:
 <a href='#tableofcontents'>Back to 'Table of Contents'</a>
 <br><br>
 <h5>
-Using crash conditions, vehicle, driver, and road data of single motorcycle crash incidents (Crashes where only a single motorcycle was involved) from years 2018 - 2022 in the <a href='https://cris.dot.state.tx.us/public/Query/app/home'>CRIS Query</a>, identify patterns and create a classification model to predict the level of injury severity of the motorcycle driver.
+Using single motorcycle crash incidents (Crashes where only a single motorcycle was involved) in Texas from years 2018 - 2022 in the <a href='https://cris.dot.state.tx.us/public/Query/app/home'>CRIS Query</a>, identify patterns and create a classification model to predict the level of injury severity of the motorcycle driver in order to assign a risk score of the driver to create a socially conscience insurance premium for the individual.
 </h5>
 <br><br><br>
 
@@ -256,22 +256,22 @@ Due to the extensive amount of columns (254) in the dataset, this data dictionar
 <br><br>
 <h4><b>Summary:</b></h4>
 
-- When strictly looking at what causes single motorcycle crash incidents, there is a pattern of being later in the evening, during warmer months, and generally grouped in areas with curves and hazards in the road.  In relation to the injury severity, that gets more complex, but a combination of the driver's background and the information of their motorcycle can lead to a fairly accurate predictive model.
+- In order to give the best and overall superior insurance premiums that is socially conscience (Avoiding discrimination, red-lining, and income bias), we only require information on motorcycle endorsement status, age, gender, and specifics about the motorcycle being driven.  From just that information, we can provide a very competitive insurance premium that is only 4% more expensive that what Progressive motorcycle insurance would offer.
 <br><br>
 <h4><b>Recommendations:</b></h4>
 
-- Our model is {acc_score}% accurate in predicting the level of injury severity for a motorcyclist should they get into a single motorcycle crash.  Because of this, implementing our model or our aggregated risk score for an individual may prove useful in determining the individual's insurance premium cost.
+- In order to achieve a more fair, safe, and more enjoyable motorcycle experience for anyone and everyone, we wish that you see the value in our vision and model so that we can serve you, better improve upon the current model, and inspire fairness in not just motorcycle insurance.
 <br><br>
 <h4><b>Next Steps:</b></h4>
 
-- Attempt to derive more in-depth location data
-    - Residency (Rural/Urban)
-    - Population density/sq.mile
-    - What kind of roads to expect in immeadiate vicinity (Highway/non)
-    - How often are there curves in the road
-- Attempt to derive more information about the driver's driving habits
-    - How far do they drive on average
-    - What vehicles do they normally drive
-    - What is their crash history
-- Attempt to get a more accurate model that also reflects in the individual injury risk value for the person
+- Better motorcycle exploration
+    - Engine (ccs)
+    - Type of motorcycle
+    - Chance of theft
+    - Safety features of the motorcycle
+    - The condition of the motorcycle (If not new)
+- Expand our horizons to other US states in order to evaluate whether or not our current model is consistent
+- Expand our population sample to not just motorcyclists who were involved in a crash, but rather both had accident history and without accident history
+- Attempt to improve the predictive model of injury severity as close to 100% as possible
+- Determine if we want to create insurance models for other things outside of motorcycle insurance
 <br><br>
